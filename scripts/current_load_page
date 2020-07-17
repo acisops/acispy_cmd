@@ -494,11 +494,11 @@ while (datetime.utcnow()-run_start_time).seconds < 21600.0:
     ccd.fig.subplots_adjust(left=lm, right=rm)
     ccd.savefig(os.path.join(outdir, "current_ccd.png"))
 
-    roll = acispy.DatePlot(ds_models["fptemp_11"], "off_nominal_roll", field2="earth_solid_angle", 
+    roll = acispy.DatePlot(ds_models["fptemp_11"], "off_nom_roll", field2="earth_solid_angle", 
                            color="blue", figsize=(15, 8))
     roll.add_vline(now_time_str, lw=3)
     title_str = "%s\nCurrent Off-nominal roll: %.2f degree\nEarth Solid Angle: %s sr" % (now_time_str,
-        ds_models["fptemp_11"]["off_nominal_roll"][now_time_str].value,
+        ds_models["fptemp_11"]["off_nom_roll"][now_time_str].value,
         ds_models["fptemp_11"]["earth_solid_angle"][now_time_str].value)
     roll.set_title(title_str)
     roll.set_ylim(-20.0, 20.0)
