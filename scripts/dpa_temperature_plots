@@ -24,7 +24,8 @@ if len(sys.argv) > 1:
 else:
     outpath = os.getcwd()
 
-dc = acispy.EngArchiveData(tstart, tstop, ["1dpamzt", "ccsdstmf"]+board_temps)
+dc = acispy.EngArchiveData(tstart, tstop, ["1dpamzt", "ccsdstmf"]+board_temps, 
+                           interpolate="nearest")
 
 unit_line = np.linspace(-10, 60, 200)
 
@@ -39,6 +40,9 @@ for j, msid in enumerate(board_temps):
     yy = dc["msids", msid].value
     cc = dc["msids", "fep_count"].value
     fmt = dc["msids", "ccsdstmf"].value
+    print(xx.size, yy.size, cc.size, fmt.size)
+    print(dc["msids", msid].dates)
+    print(dc["msids", "1dpamzt"].dates)
     fig = plt.figure(figsize=(36, 20))
     for i, n in enumerate(range(6, -1, -1)):
         ax = fig.add_subplot(241+i)
