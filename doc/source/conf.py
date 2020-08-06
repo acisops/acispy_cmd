@@ -33,7 +33,7 @@ html_theme_options = dict(
 )
 
 # General information about the project.
-project = 'ACISpy Tasks'
+project = 'ACISpy Command Line Tools'
 copyright = '2020, ACIS Operations Team'
 author = 'John ZuHone'
 
