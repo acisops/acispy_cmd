@@ -7,14 +7,16 @@ matplotlib.use("agg")
 import acispy
 from acispy.utils import cti_simodes
 import matplotlib.pyplot as plt
-from Chandra.Time import date2secs, secs2date, DateTime
+from cxotime import CxoTime
 import argparse
 import numpy as np
 from Ska.Matplotlib import cxctime2plotdate
 import bisect
-from Chandra.cmd_states import decode_power
+from kadi.commands.states import decode_power
 from kadi.commands import get_cmds
 from kadi.events import load_segments, rad_zones
+
+date2secs = lambda t: CxoTime(t).secs
 
 dsnfile = "/data/acis/dsn_summary.dat"
 
@@ -46,27 +48,27 @@ lr_web_css = [
 temps = ["fptemp_11", "1dpamzt", "1deamzt", "1pdeaat", "tmp_fep1_mong",
          "tmp_fep1_actel", "tmp_bep_pcb"]
 
-plot_limits = {"fptemp_11": (-120.0, -110.0),
-               "1deamzt": (5.0, 42.0),
+plot_limits = {"fptemp_11": (-120.0, -90.0),
+               "1deamzt": (5.0, 43.0),
                "1dpamzt": (5.0, 42.0),
                "1pdeaat": (15.0, 63.0),
                "tmp_fep1_mong": (-1.0, 55.0),
                "tmp_fep1_actel": (-1.0, 54.0),
                "tmp_bep_pcb": (5.0, 50.0)}
 
-planning_limits = {"1deamzt": 36.5,
+planning_limits = {"1deamzt": 37.5,
                    "1dpamzt": 37.5,
                    "1pdeaat": 52.5,
                    "tmp_fep1_mong": 47.0,
                    "tmp_fep1_actel": 46.0,
                    "tmp_bep_pcb": 42.0}
-yellow_limits = {"1deamzt": 38.5,
+yellow_limits = {"1deamzt": 39.5,
                  "1dpamzt": 39.5,
                  "1pdeaat": 57.0,
                  "tmp_fep1_mong": 49.0,
                  "tmp_fep1_actel": 48.0,
                  "tmp_bep_pcb": 44.0}
-red_limits = {"1deamzt": 40.5,
+red_limits = {"1deamzt": 42.5,
               "1dpamzt": 41.5,
               "1pdeaat": 62.0,
               "tmp_fep1_mong": 54.0,
@@ -85,10 +87,11 @@ low_red_limits = {"tmp_fep1_mong": -10.0,
 
 fp_limits = {"acis_i": -112.0,
              "acis_s": -111.0,
-             "fp_sens": -118.7}
+             "acis_hot": -109.0,
+             "cold_ecs": -119.5}
 
 obsid_link_base = "https://icxc.harvard.edu/cgi-bin/mp/target_param.cgi?"
-mit_link_base = "http://acis.mit.edu/cgi-bin/get-atbls?tag="
+mit_link_base = "http://acisweb.mit.edu/cgi-bin/get-atbls?tag="
 lr_link_base = "http://cxc.cfa.harvard.edu/acis/lr_texts/%s/%s_lr.html"
 tm_link_base = "http://cxc.cfa.harvard.edu/acis/Thermal/%s/%s.html"
 
@@ -135,7 +138,7 @@ def get_radzones(begin_time, last_time):
 
 def process_commands(now_time_utc, cmds):
 
-    now_time_secs = DateTime(now_time_utc).secs
+    now_time_secs = CxoTime(now_time_utc).secs
     end_time_secs = now_time_secs + 86400.0
     start_time_secs = now_time_secs - 2.0*86400.0
 
@@ -149,7 +152,7 @@ def process_commands(now_time_utc, cmds):
 
     for cmd in cmds:
 
-        the_time = date2secs(cmd["date"])
+        the_time = CxoTime(cmd["date"]).secs
 
         if the_time < start_time_secs or the_time > end_time_secs:
             continue
@@ -276,7 +279,7 @@ def get_comms():
                 time_bot = date2secs(bot.strftime("%Y:%j:%H:%M:%S"))+86400.0*(float(words[-3]) % 1)
                 time_eot = date2secs(eot.strftime("%Y:%j:%H:%M:%S"))+86400.0*(float(words[-1]) % 1)
                 durations.append((time_eot-time_bot)/60.0)
-                comms.append((secs2date(time_bot), secs2date(time_eot)))
+                comms.append((CxoTime(time_bot).date, CxoTime(time_eot).date))
     except FileNotFoundError:
         comms = None
         durations = None
@@ -316,7 +319,7 @@ def add_annotations(dp, tmin, tmax, simtrans, comms, cti_runs, radzones):
     for tran in simtrans:
         dp.add_vline(tran[0], color='brown', ls='-')
         t = date2secs(tran[0])
-        tdt = secs2date(t + 1800.0)
+        tdt = CxoTime(t + 1800.0).date
         if t < tmin or t+3600.0 > tmax:
             continue
         ymin, ymax = dp.ax.get_ylim()
@@ -425,7 +428,7 @@ while (datetime.utcnow()-run_start_time).seconds < 21600.0:
         reload = False
         last_reload_time = now_time_secs
 
-    last_reload_date = secs2date(last_reload_time)
+    last_reload_date = CxoTime(last_reload_time).date
     last_reload_loc = datetime.strptime(last_reload_date, "%Y:%j:%H:%M:%S.%f").replace(tzinfo=timezone.utc).astimezone(tz=None).strftime("%D %H:%M:%S")
 
     outlines = ["<font face=\"times\">This is the <a href=\"%s\"><font style=\"color:blue\">%s</font></a> load.</font>" % (lr_link, load_name),
@@ -453,8 +456,10 @@ while (datetime.utcnow()-run_start_time).seconds < 21600.0:
         title_str += "\nCurrent instrument: %s, Current ObsID: %d" % (ds_m["states", "instrument"][now_time_str],
                                                                       ds_m["states", "obsid"][now_time_str])
         if temp == "fptemp_11":
-            dp.add_hline(fp_limits["acis_i"], color='purple')
-            dp.add_hline(fp_limits["acis_s"], color='blue')
+            dp.add_hline(fp_limits["acis_i"], color='purple', ls='--')
+            dp.add_hline(fp_limits["acis_s"], color='blue', ls='--')
+            dp.add_hline(fp_limits["cold_ecs"], color='dodgerblue', ls='--')
+            dp.add_hline(fp_limits["acis_hot"], color='red', ls='--')
         else:
             dp.add_hline(planning_limits[temp], color='g')
             dp.add_hline(yellow_limits[temp], color='gold')
@@ -463,6 +468,8 @@ while (datetime.utcnow()-run_start_time).seconds < 21600.0:
             dp.add_hline(low_planning_limits[temp], color='g')
             dp.add_hline(low_yellow_limits[temp], color='gold')
             dp.add_hline(low_red_limits[temp], color='r')
+        if temp == "1dpamzt":
+            dp.add_hline(12.0, color='dodgerblue', ls='--')
         dp.set_title(title_str)
         dp.set_ylim(plot_limits[temp][0], plot_limits[temp][1])
         add_annotations(dp, begin_time_secs, end_time_secs, simtrans, comms, cti_runs, radzones)
