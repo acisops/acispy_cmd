@@ -6,17 +6,16 @@ matplotlib.rc("font", size=18, family="serif")
 import acispy
 import numpy as np
 import matplotlib.pyplot as plt
-from acispy.utils import get_time
-from Chandra.Time import secs2date
 import os
 import sys
+from cxotime import CxoTime
 
 board_temps = ["tmp_bep_pcb", "tmp_bep_osc", "tmp_fep0_mong",
                "tmp_fep0_pcb", "tmp_fep0_actel", "tmp_fep0_ram",
                "tmp_fep0_fb", "tmp_fep1_mong", "tmp_fep1_pcb",
                "tmp_fep1_actel", "tmp_fep1_ram", "tmp_fep1_fb"]
 
-tstop = get_time("now", fmt="secs")
+tstop = CxoTime().secs
 tstart = tstop - 365.0*24.0*3600.0
 
 if len(sys.argv) > 1:
@@ -66,8 +65,8 @@ for j, msid in enumerate(board_temps):
             ax.set_ylabel(r"%s $\mathrm{(^{\circ}C)}$" % msid.upper())
         ax.legend(loc=2)
     fig.suptitle("%s vs. 1DPAMZT\n%s - %s" % (msid.upper(),
-                                              secs2date(tstart),
-                                              secs2date(tstop)),
+                                              CxoTime(tstart).date,
+                                              CxoTime(tstop).date),
                  y=0.94, fontsize=30)
     filename = os.path.join(outpath, "%s_scatter.png" % msid)
     fig.savefig(filename, bbox_inches='tight', dpi=50)
