@@ -10,6 +10,41 @@ For making quick plots and getting quick summaries of important information, the
 following ACISpy-based command-line utilities are provided. For finer-grained 
 control over plots and data, it is recommended to use the ACISpy Python interface.
 
+Activating
+----------
+
+The ACISpy command-line tools are installed into the ACIS Ops Ska Python stack. 
+If you are logged on as ``acisdude``, all you need to do is issue the 
+command ``acisska`` and this Python stack and the tools will be loaded into 
+your environment. 
+
+However, if you would like activate this stack and these tools from your own user
+account, add the following alias to your ``.bashrc`` if you are using the Bash
+shell (or a variant):
+
+.. code-block:: bash
+
+    acisska () {
+        PATH=/data/acis/ska/bin:$PATH
+        export SKA=/proj/sot/ska
+        PS1="[ska3:\u@\h \W]\$ "
+    }
+
+Or, if you are a mascohist or are otherwise compelled to use the C shell or a 
+variant of it, add this alias to your ``.cshrc.user``:
+
+.. code-block:: bash
+
+    alias acisska 'set path = (/data/acis/ska/bin/ $path); \
+	               setenv SKA /proj/sot/ska; \
+	               set prompt = "[acisska] $prompt"'
+
+.. warning::
+
+    The ACIS Ops Ska Python stack should be used in a "clean" terminal window 
+    where you are not trying to do anything else (i.e., load reviews, SACGS) 
+    as setting up the Ska environment messes with environment variables and paths. 
+
 ``multiplot_archive``
 ---------------------
 
