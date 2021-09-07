@@ -6,15 +6,19 @@ import matplotlib
 matplotlib.use("agg")
 import acispy
 from acispy.utils import cti_simodes
+from acispy.thermal_models import short_name
 import matplotlib.pyplot as plt
 from cxotime import CxoTime
 import argparse
 import numpy as np
 from Ska.Matplotlib import cxctime2plotdate
 import bisect
-from kadi.commands.states import decode_power
+from kadi.commands.states import decode_power, get_states
 from kadi.commands import get_cmds
 from kadi.events import load_segments, rad_zones
+from pathlib import Path
+
+chandra_models_path = Path("/data/acis/ska_pkg/chandra_models/chandra_models/xija")
 
 date2secs = lambda t: CxoTime(t).secs
 
@@ -48,7 +52,7 @@ lr_web_css = [
 temps = ["fptemp_11", "1dpamzt", "1deamzt", "1pdeaat", "tmp_fep1_mong",
          "tmp_fep1_actel", "tmp_bep_pcb"]
 
-plot_limits = {"fptemp_11": (-120.0, -90.0),
+plot_limits = {"fptemp_11": (-120.0, -95.0),
                "1deamzt": (5.0, 43.0),
                "1dpamzt": (5.0, 42.0),
                "1pdeaat": (15.0, 63.0),
@@ -419,11 +423,14 @@ while (datetime.utcnow()-run_start_time).seconds < 21600.0:
         radzones = get_radzones(begin_time_str, last_time_str)
         model_start = now_time_secs - 4.0*86400.0
         model_end = now_time_secs + 4.0*86400.0
+        states = get_states(model_start, model_end, 
+                            merge_identical=True).as_array()
         for temp in temps:
+            model_spec = chandra_models_path / short_name[temp] / f"{short_name[temp]}_spec.json" 
             T_init = ds_tlm["msids", temp][model_start-700.0:model_start+700.0].value.mean()
-            ds_models[temp] = acispy.ThermalModelRunner.from_kadi(temp, model_start,
-                                                                  model_end, T_init,
-                                                                  get_msids=False, no_eclipse=True)
+            ds_models[temp] = acispy.ThermalModelRunner(temp, model_start, model_end,
+                                                        states=states, T_init=T_init,
+                                                        get_msids=False, model_spec=model_spec)
         cti_runs = find_cti_runs(ds_models["1dpamzt"].states)
         reload = False
         last_reload_time = now_time_secs
