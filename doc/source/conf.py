@@ -30,6 +30,7 @@ html_theme_options = dict(
     bootswatch_theme="readable",
     navbar_sidebarrel=False,
     globaltoc_depth=2,
+    body_max_width="none"
 )
 
 # General information about the project.

@@ -239,44 +239,28 @@ Returns:
 
 .. code-block:: text
 
-    usage: simulate_ecs_run [-h] [--vehicle_load VEHICLE_LOAD] [--simpos SIMPOS]
-                            [--off_nom_roll OFF_NOM_ROLL] [--dh_heater DH_HEATER]
-                            [--fep_count FEP_COUNT] [--clocking CLOCKING]
-                            [--instrument INSTRUMENT] [--q Q]
-                            component tstart hours T_init pitch ccd_count
-    
-    Simulate an ECS run.
-    
-    positional arguments:
-      component             The component to model: dpa, dea, or psmc.
-      tstart                The start time of the ECS run in YYYY:DOY:HH:MM:SS
-                            format
-      hours                 The length of the ECS run in hours.
-      T_init                The initial temperature of the component in degrees C.
-      pitch                 The pitch in degrees.
-      ccd_count             The number of CCDs to clock.
-    
-    optional arguments:
-      -h, --help            show this help message and exit
-      --vehicle_load VEHICLE_LOAD
-                            The vehicle load which is running. Default: None,
-                            meaning no vehicle load. If this parameter is set, the
-                            input values of pitch and off-nominal roll will be
-                            ignored and the values from the vehicle load will be
-                            used.
-      --simpos SIMPOS       The SIM position. Default: -99616.0
-      --off_nom_roll OFF_NOM_ROLL
-                            The off-nominal roll. Default: 0.0
-      --dh_heater DH_HEATER
-                            Is the DH heater on (1) or off (0)? Default: 0/off.
-      --fep_count FEP_COUNT
-                            The number of FEPs which are on.
-      --clocking CLOCKING   Whether or not the CCDs are being clocked.
-      --instrument INSTRUMENT
-                            The instrument which is being used, only for the FP
-                            temperature.
-      --q Q                 Target quaternion in the case of the FP temperature.
-
+   usage: simulate_ecs_run [-h] [--vehicle_load VEHICLE_LOAD] [--off_nom_roll OFF_NOM_ROLL] [--dh_heater DH_HEATER]
+                           component tstart hours T_init pitch ccd_count
+   
+   Simulate an ECS run.
+   
+   positional arguments:
+     component             The component to model: dpa, dea, or psmc.
+     tstart                The start time of the ECS run in YYYY:DOY:HH:MM:SS format
+     hours                 The length of the ECS run in hours.
+     T_init                The initial temperature of the component in degrees C.
+     pitch                 The pitch in degrees.
+     ccd_count             The number of CCDs to clock.
+   
+   optional arguments:
+     -h, --help            show this help message and exit
+     --vehicle_load VEHICLE_LOAD
+                           The vehicle load which is running. Default: None, meaning no vehicle load. If this parameter is set, the
+                           input values of pitch and off-nominal roll will be ignored and the values from the vehicle load will be used.
+     --off_nom_roll OFF_NOM_ROLL
+                           The off-nominal roll. Default: 0.0
+     --dh_heater DH_HEATER
+                           Is the DH heater on (1) or off (0)? Default: 0/off.
 Example 1
 +++++++++
 
@@ -297,24 +281,23 @@ Returns:
 
 .. code-block:: text
 
-    acispy: [INFO     ] 2020-07-15 14:25:22,895 Run Parameters
-    acispy: [INFO     ] 2020-07-15 14:25:22,895 --------------
-    acispy: [INFO     ] 2020-07-15 14:25:22,895 Start Datestring: 2015:100:12:45:30.000
-    acispy: [INFO     ] 2020-07-15 14:25:22,895 Length of ECS run in hours: 24.0
-    acispy: [INFO     ] 2020-07-15 14:25:22,895 Stop Datestring: 2015:101:15:32:22.000
-    acispy: [INFO     ] 2020-07-15 14:25:22,895 Initial Temperature: 10 degrees C
-    acispy: [INFO     ] 2020-07-15 14:25:22,895 CCD Count: 6
-    acispy: [INFO     ] 2020-07-15 14:25:22,895 FEP Count: 6
-    acispy: [INFO     ] 2020-07-15 14:25:22,895 Pitch: 150.0
-    acispy: [INFO     ] 2020-07-15 14:25:22,895 SIM Position: -99616
-    acispy: [INFO     ] 2020-07-15 14:25:22,896 Off-nominal Roll: 12.0
-    acispy: [INFO     ] 2020-07-15 14:25:22,896 Detector Housing Heater: OFF
-    acispy: [INFO     ] 2020-07-15 14:25:22,896 Model Result
-    acispy: [INFO     ] 2020-07-15 14:25:22,896 ------------
-    acispy: [INFO     ] 2020-07-15 14:25:22,896 The limit of 37.5 degrees C will be reached at 2015:100:20:23:20.816, after 27.4708 ksec.
-    acispy: [INFO     ] 2020-07-15 14:25:22,896 The limit is reached before the end of the observation.
-    acispy: [WARNING  ] 2020-07-15 14:25:22,896 This observation is NOT safe from a thermal perspective.
-    acispy: [INFO     ] 2020-07-15 14:25:23,729 Image of the model run has been written to ecs_run_dpa_6chip_2015:100:12:45:30.png.
+    acispy: [INFO     ] 2021-09-07 13:47:29,088 Using model for dpa from chandra_models version = 3.35.2
+    acispy: [INFO     ] 2021-09-07 13:47:29,423 Run Parameters
+    acispy: [INFO     ] 2021-09-07 13:47:29,423 --------------
+    acispy: [INFO     ] 2021-09-07 13:47:29,423 Start Datestring: 2015:100:12:45:30.000
+    acispy: [INFO     ] 2021-09-07 13:47:29,423 Length of state in hours: 24.0
+    acispy: [INFO     ] 2021-09-07 13:47:29,423 Stop Datestring: 2015:102:04:55:48.000
+    acispy: [INFO     ] 2021-09-07 13:47:29,423 Initial Temperature: 10.0 degrees C
+    acispy: [INFO     ] 2021-09-07 13:47:29,423 CCD/FEP Count: 6
+    acispy: [INFO     ] 2021-09-07 13:47:29,424 Pitch: 150.0
+    acispy: [INFO     ] 2021-09-07 13:47:29,424 Off-nominal Roll: 12.0
+    acispy: [INFO     ] 2021-09-07 13:47:29,424 Detector Housing Heater: OFF
+    acispy: [INFO     ] 2021-09-07 13:47:29,424 Model Result
+    acispy: [INFO     ] 2021-09-07 13:47:29,425 ------------
+    acispy: [INFO     ] 2021-09-07 13:47:29,425 The limit of 37.5 degrees C will be reached at 2015:100:19:17:44.816, after 23.53481599998474 ksec.
+    acispy: [INFO     ] 2021-09-07 13:47:29,426 The limit is reached before the end of the observation.
+    acispy: [WARNING  ] 2021-09-07 13:47:29,426 This observation is NOT safe from a thermal perspective.
+    acispy: [INFO     ] 2021-09-07 13:47:30,134 Image of the model run has been written to ecs_run_dpa_6chip_2015:100:12:45:30.png.
 
 .. image:: _images/ecs_run.png
 
@@ -338,23 +321,22 @@ Returns:
 
 .. code-block:: text
 
-    acispy: [INFO     ] 2020-07-15 14:33:20,718 Run Parameters
-    acispy: [INFO     ] 2020-07-15 14:33:20,718 --------------
-    acispy: [INFO     ] 2020-07-15 14:33:20,718 Start Datestring: 2017:069:15:40:00.000
-    acispy: [INFO     ] 2020-07-15 14:33:20,718 Length of ECS run in hours: 24.0
-    acispy: [INFO     ] 2020-07-15 14:33:20,718 Stop Datestring: 2017:070:18:26:52.000
-    acispy: [INFO     ] 2020-07-15 14:33:20,718 Initial Temperature: 7.5 degrees C
-    acispy: [INFO     ] 2020-07-15 14:33:20,718 CCD Count: 4
-    acispy: [INFO     ] 2020-07-15 14:33:20,719 FEP Count: 4
-    acispy: [INFO     ] 2020-07-15 14:33:20,719 Pitch: 150.0
-    acispy: [INFO     ] 2020-07-15 14:33:20,719 SIM Position: -99616
-    acispy: [INFO     ] 2020-07-15 14:33:20,719 Off-nominal Roll: 0.0
-    acispy: [INFO     ] 2020-07-15 14:33:20,719 Detector Housing Heater: OFF
-    acispy: [INFO     ] 2020-07-15 14:33:20,719 Model Result
-    acispy: [INFO     ] 2020-07-15 14:33:20,719 ------------
-    acispy: [INFO     ] 2020-07-15 14:33:20,719 The limit of 36.5 degrees C is never reached.
-    acispy: [INFO     ] 2020-07-15 14:33:20,719 This observation is safe from a thermal perspective.
-    acispy: [INFO     ] 2020-07-15 14:33:21,547 Image of the model run has been written to ecs_run_dea_4chip_2017:069:15:40:00.png.
+    acispy: [INFO     ] 2021-09-07 13:48:01,352 Using model for dea from chandra_models version = 3.35.2
+    acispy: [INFO     ] 2021-09-07 13:48:01,632 Run Parameters
+    acispy: [INFO     ] 2021-09-07 13:48:01,633 --------------
+    acispy: [INFO     ] 2021-09-07 13:48:01,633 Start Datestring: 2017:069:15:40:00.000
+    acispy: [INFO     ] 2021-09-07 13:48:01,633 Length of state in hours: 24.0
+    acispy: [INFO     ] 2021-09-07 13:48:01,633 Stop Datestring: 2017:071:07:50:18.000
+    acispy: [INFO     ] 2021-09-07 13:48:01,633 Initial Temperature: 7.5 degrees C
+    acispy: [INFO     ] 2021-09-07 13:48:01,633 CCD/FEP Count: 4
+    acispy: [INFO     ] 2021-09-07 13:48:01,633 Pitch: 150.0
+    acispy: [INFO     ] 2021-09-07 13:48:01,633 Off-nominal Roll: 0.0
+    acispy: [INFO     ] 2021-09-07 13:48:01,633 Detector Housing Heater: OFF
+    acispy: [INFO     ] 2021-09-07 13:48:01,634 Model Result
+    acispy: [INFO     ] 2021-09-07 13:48:01,635 ------------
+    acispy: [INFO     ] 2021-09-07 13:48:01,635 The limit of 36.5 degrees C is never reached. 
+    acispy: [INFO     ] 2021-09-07 13:48:01,635 This observation is safe from a thermal perspective.
+    acispy: [INFO     ] 2021-09-07 13:48:02,529 Image of the model run has been written to ecs_run_dea_4chip_2017:069:15:40:00.png.
 
 .. image:: _images/ecs_run2.png
 
@@ -382,25 +364,22 @@ Returns:
 
 .. code-block:: text
 
-    acispy: [INFO     ] 2020-07-15 14:34:38,946 Modeling a 6-chip observation concurrent with the SEP0917C vehicle loads.
-    acispy: [INFO     ] 2020-07-15 14:34:40,801 Run Parameters
-    acispy: [INFO     ] 2020-07-15 14:34:40,801 --------------
-    acispy: [INFO     ] 2020-07-15 14:34:40,801 Start Datestring: 2017:256:03:20:00.000
-    acispy: [INFO     ] 2020-07-15 14:34:40,801 Length of ECS run in hours: 24.0
-    acispy: [INFO     ] 2020-07-15 14:34:40,801 Stop Datestring: 2017:257:06:06:52.000
-    acispy: [INFO     ] 2020-07-15 14:34:40,802 Initial Temperature: 10 degrees C
-    acispy: [INFO     ] 2020-07-15 14:34:40,802 CCD Count: 6
-    acispy: [INFO     ] 2020-07-15 14:34:40,802 FEP Count: 6
-    acispy: [INFO     ] 2020-07-15 14:34:40,802 Pitch: Min: 46.56, Max: 156
-    acispy: [INFO     ] 2020-07-15 14:34:40,802 SIM Position: -99616
-    acispy: [INFO     ] 2020-07-15 14:34:40,802 Off-nominal Roll: Min: -12.5116, Max: 13.7689
-    acispy: [INFO     ] 2020-07-15 14:34:40,802 Detector Housing Heater: OFF
-    acispy: [INFO     ] 2020-07-15 14:34:40,802 Model Result
-    acispy: [INFO     ] 2020-07-15 14:34:40,802 ------------
-    acispy: [INFO     ] 2020-07-15 14:34:40,803 The limit of 37.5 degrees C will be reached at 2017:256:11:06:54.816, after 28.0148 ksec.
-    acispy: [INFO     ] 2020-07-15 14:34:40,803 The limit is reached before the end of the observation.
-    acispy: [WARNING  ] 2020-07-15 14:34:40,803 This observation is NOT safe from a thermal perspective.
-    acispy: [INFO     ] 2020-07-15 14:34:41,808 Image of the model run has been written to ecs_run_dpa_6chip_2017:256:03:20:00.png.
+    acispy: [INFO     ] 2021-09-07 13:50:44,322 Modeling a 6-chip state concurrent with the SEP0917C vehicle loads.
+    acispy: [INFO     ] 2021-09-07 13:50:46,713 Using model for dpa from chandra_models version = 3.35.2
+    acispy: [INFO     ] 2021-09-07 13:50:46,958 Run Parameters
+    acispy: [INFO     ] 2021-09-07 13:50:46,959 --------------
+    acispy: [INFO     ] 2021-09-07 13:50:46,959 Start Datestring: 2017:256:03:20:00.000
+    acispy: [INFO     ] 2021-09-07 13:50:46,959 Length of state in hours: 24.0
+    acispy: [INFO     ] 2021-09-07 13:50:46,959 Stop Datestring: 2017:257:19:30:18.000
+    acispy: [INFO     ] 2021-09-07 13:50:46,959 Initial Temperature: 10.0 degrees C
+    acispy: [INFO     ] 2021-09-07 13:50:46,959 CCD/FEP Count: 6
+    acispy: [INFO     ] 2021-09-07 13:50:46,959 Detector Housing Heater: OFF
+    acispy: [INFO     ] 2021-09-07 13:50:46,960 Model Result
+    acispy: [INFO     ] 2021-09-07 13:50:46,960 ------------
+    acispy: [INFO     ] 2021-09-07 13:50:46,961 The limit of 37.5 degrees C will be reached at 2017:256:11:34:14.816, after 29.65481599998474 ksec.
+    acispy: [INFO     ] 2021-09-07 13:50:46,961 The limit is reached before the end of the observation.
+    acispy: [WARNING  ] 2021-09-07 13:50:46,961 This observation is NOT safe from a thermal perspective.
+    acispy: [INFO     ] 2021-09-07 13:50:47,707 Image of the model run has been written to ecs_run_dpa_6chip_2017:256:03:20:00.png.
 
 .. image:: _images/ecs_run3.png
 
