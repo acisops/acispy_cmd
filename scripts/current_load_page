@@ -5,7 +5,7 @@ import os
 import matplotlib
 matplotlib.use("agg")
 import acispy
-from acispy.utils import cti_simodes
+from acispy.utils import cti_simodes, mylog
 from acispy.thermal_models import short_name
 import matplotlib.pyplot as plt
 from cxotime import CxoTime
@@ -13,10 +13,13 @@ import argparse
 import numpy as np
 from Ska.Matplotlib import cxctime2plotdate
 import bisect
+import logging
 from kadi.commands.states import decode_power, get_states
 from kadi.commands import get_cmds
 from kadi.events import load_segments, rad_zones
 from pathlib import Path
+
+mylog.setLevel(logging.ERROR)
 
 chandra_models_path = Path("/data/acis/ska_pkg/chandra_models/chandra_models/xija")
 
