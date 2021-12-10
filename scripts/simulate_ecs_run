@@ -29,7 +29,7 @@ parser.add_argument("--instrument", type=str,
 fix_minus_sign = False
 
 argv = sys.argv[1:]
-if argv[4].startswith("-"):
+if len(argv) >= 5 and argv[4].startswith("-"):
     argv[4] = argv[4][1:]
     fix_minus_sign = True
 
