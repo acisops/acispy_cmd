@@ -18,8 +18,11 @@ from kadi.commands.states import decode_power, get_states
 from kadi.commands import get_cmds
 from kadi.events import load_segments, rad_zones
 from pathlib import Path
+import warnings
 
 mylog.setLevel(logging.ERROR)
+
+warnings.filterwarnings("ignore", "erfa")
 
 chandra_models_path = Path("/data/acis/ska_pkg/chandra_models/chandra_models/xija")
 
