@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 
 import matplotlib
-matplotlib.use("Qt5Agg")
 import matplotlib.pyplot as plt
 import argparse
 import acispy
 from acispy.utils import state_labels
+matplotlib.use("Qt5Agg")
+
 
 parser = argparse.ArgumentParser(description='Make plots of MSIDs from a tracelog file. Commanded states will be loaded from the commanded states database.')
 parser.add_argument("tracelog", type=str, help='The tracelog file to load the MSIDs from')
