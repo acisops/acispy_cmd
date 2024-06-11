@@ -124,30 +124,33 @@ def detect_safing_actions(t):
 def find_the_load(t):
     load_name = None
     load_time = None
-    ls = load_segments.filter(start=t-86400.0, stop=t+86400.0)
+    load_tstart = None
+    ls = load_segments.filter(start=t-5*86400.0, stop=t+86400.0)
     try:
         if len(ls) > 0:
             for l in ls:
                 if t > l.tstart:
                     load_name = l.load_name
                     load_time = l.start
+                    load_tstart = l.tstart
                 else:
                     break
     except:
         pass
     del ls
-    s107s = scs107s.filter(start=t-86400.0, stop=t+86400.0)
-    try:
-        if len(s107s) > 0:
-            for s in s107s:
-                if t > s.tstart:
-                    load_name = "SCS-107"
-                    load_time = s.start
-                else:
-                    break
-    except:
-        pass
-    del s107s
+    s107s = scs107s.filter(start=t-5*86400.0, stop=t+86400.0)
+    if load_tstart is not None:
+        try:
+            if len(s107s) > 0:
+                for s in s107s:
+                    if t > s.tstart and t > load_tstart:
+                        load_name = "SCS-107"
+                        load_time = s.start
+                    else:
+                        break
+        except:
+            pass
+        del s107s
     return load_name, load_time
 
 
@@ -409,7 +412,6 @@ def main():
     
     now_finder = NowFinder(start_now=args.start_now)
 
-    #run_start_time = datetime.utcnow()
     run_start_time = now_finder.get_now()
 
     while (now_finder.get_now()-run_start_time).seconds < 21600.0:
