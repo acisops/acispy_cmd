@@ -236,26 +236,21 @@ Returns:
 
 .. code-block:: text
 
-   usage: simulate_ecs_run [-h] [--dh_heater DH_HEATER] [--instrument INSTRUMENT] component tstart hours T_init attitude ccd_count
+   usage: simulate_ecs_run [-h] component tstart hours T_init attitude ccd_count
    
    Simulate an ECS run.
    
    positional arguments:
-     component             The component to model: dpa, dea, psmc, or acisfp
-     tstart                The start time of the ECS run in YYYY:DOY:HH:MM:SS format
-     hours                 The length of the ECS run in hours.
-     T_init                The initial temperature of the component in degrees C.
-     attitude              The attitude information for the ECS run. One of three possible formats: pitch,off_nom_roll: 155.0,2.0;
-                           quaternion: 1.0,0.3,0.0,0.0; vehicle_load: SEP1921C
-     ccd_count             The number of CCDs to clock.
+     component   The component to model: dpa, dea, psmc, or acisfp
+     tstart      The start time of the ECS run in YYYY:DOY:HH:MM:SS format
+     hours       The length of the ECS run in hours.
+     T_init      The initial temperature of the component in degrees C.
+     attitude    The attitude information for the ECS run. One of three possible formats:
+                 pitch,off_nom_roll: 155.0,2 .0; quaternion: 1.0,0.3,0.0,0.0; a string named: vehicle
+     ccd_count   The number of CCDs to clock.
    
-   optional arguments:
-     -h, --help            show this help message and exit
-     --dh_heater DH_HEATER
-                           Is the DH heater on (1) or off (0)? Default: 0/off.
-     --instrument INSTRUMENT
-                           Which instrument will be used to conduct the ECS measurement, ACIS-I or ACIS-S. Required for runs with the
-                           focal plane model.
+   options:
+     -h, --help  show this help message and exit
 
 Example 1
 +++++++++
@@ -277,25 +272,25 @@ Returns:
 
 .. code-block:: text
 
-   acispy: [INFO     ] 2021-12-10 13:34:17,872 Using model for dpa from chandra_models version = 3.37
-   Fetching msid: aoeclips over 2015:100:12:22:16.816 to 2015:102:05:16:48.816
-   acispy: [INFO     ] 2021-12-10 13:34:18,213 Run Parameters
-   acispy: [INFO     ] 2021-12-10 13:34:18,213 --------------
-   acispy: [INFO     ] 2021-12-10 13:34:18,213 Modeled Temperature: 1dpamzt
-   acispy: [INFO     ] 2021-12-10 13:34:18,213 Start Datestring: 2015:100:12:45:30.000
-   acispy: [INFO     ] 2021-12-10 13:34:18,214 Length of state in hours: 24.0
-   acispy: [INFO     ] 2021-12-10 13:34:18,214 Stop Datestring: 2015:102:04:55:48.000
-   acispy: [INFO     ] 2021-12-10 13:34:18,214 Initial Temperature: 10.0 degrees C
-   acispy: [INFO     ] 2021-12-10 13:34:18,214 CCD/FEP Count: 6
-   acispy: [INFO     ] 2021-12-10 13:34:18,214 Pitch: 150.0
-   acispy: [INFO     ] 2021-12-10 13:34:18,214 Off-nominal Roll: 12.0
-   acispy: [INFO     ] 2021-12-10 13:34:18,214 Detector Housing Heater: OFF
-   acispy: [INFO     ] 2021-12-10 13:34:18,215 Model Result
-   acispy: [INFO     ] 2021-12-10 13:34:18,215 ------------
-   acispy: [INFO     ] 2021-12-10 13:34:18,217 The limit of 37.5 degrees C will be reached at 2015:100:19:17:44.816, after 23.53481599998474 ksec.
-   acispy: [INFO     ] 2021-12-10 13:34:18,217 The limit is reached before the end of the observation.
-   acispy: [WARNING  ] 2021-12-10 13:34:18,217 This observation is NOT safe from a thermal perspective.
-   acispy: [INFO     ] 2021-12-10 13:34:19,013 Image of the model run has been written to ecs_run_1dpamzt_6chip_2015:100:12:45:30.png.
+   acispy: [INFO     ] 2024-06-09 19:09:17,529 Using model for dpa from chandra_models version = 3.53
+   Fetching msid: aoeclips over 2015:100:12:22:16.816 to 2015:102:01:05:20.816
+   acispy: [INFO     ] 2024-06-09 19:09:17,717 Run Parameters
+   acispy: [INFO     ] 2024-06-09 19:09:17,717 --------------
+   acispy: [INFO     ] 2024-06-09 19:09:17,717 Modeled Temperature: 1dpamzt
+   acispy: [INFO     ] 2024-06-09 19:09:17,717 Start Datestring: 2015:100:12:45:30.000
+   acispy: [INFO     ] 2024-06-09 19:09:17,717 Length of state in hours: 24.0
+   acispy: [INFO     ] 2024-06-09 19:09:17,717 Stop Datestring: 2015:102:00:45:30.000
+   acispy: [INFO     ] 2024-06-09 19:09:17,717 Initial Temperature: 10.0 degrees C
+   acispy: [INFO     ] 2024-06-09 19:09:17,717 CCD/FEP Count: 6
+   acispy: [INFO     ] 2024-06-09 19:09:17,717 Pitch: 150.0
+   acispy: [INFO     ] 2024-06-09 19:09:17,717 Off-nominal Roll: 12.0
+   acispy: [INFO     ] 2024-06-09 19:09:17,717 Detector Housing Heater: OFF
+   acispy: [INFO     ] 2024-06-09 19:09:17,717 Model Result
+   acispy: [INFO     ] 2024-06-09 19:09:17,717 ------------
+   acispy: [INFO     ] 2024-06-09 19:09:17,718 The limit of 38.5 degrees C will be reached at 2015:100:19:56:00.816, after 25.830815999984743 ksec.
+   acispy: [INFO     ] 2024-06-09 19:09:17,718 The limit is reached before the end of the observation.
+   acispy: [WARNING  ] 2024-06-09 19:09:17,718 This observation is NOT safe from a thermal perspective.
+   acispy: [INFO     ] 2024-06-09 19:09:17,956 Image of the model run has been written to ecs_run_1dpamzt_6chip_2015:100:12:45:30.png.
 
 .. image:: _images/ecs_run.png
 
@@ -309,39 +304,37 @@ To run the ACIS focal plane model with the following conditions:
 * Initial temperature: -115.0 degrees C
 * Quaternion: [-0.04470333, 0.63502552, -0.67575906, 0.37160988]
 * CCD count: 4
-* Instrument: ACIS-S
 
 Note that in this case we specify an attitude quaternion for an accurate representation
 of the Earth solid angle. We must also specify an instrument.
 
 .. code-block:: bash
 
-    [~]$ simulate_ecs_run acisfp 2020:148:14:45:00 24 -115.0 -0.04470333,0.63502552,-0.67575906,0.37160988 4 --instrument=ACIS-S
+    [~]$ simulate_ecs_run acisfp 2020:148:14:45:00 24 -115.0 -0.04470333,0.63502552,-0.67575906,0.37160988 4
 
 Returns:
 
 .. code-block:: text
 
-   acispy: [INFO     ] 2021-12-10 13:31:56,940 Using model for acisfp from chandra_models version = 3.37
-   Fetching msid: aoeclips over 2020:148:14:22:22.816 to 2020:150:07:16:54.816
-   acispy: [INFO     ] 2021-12-10 13:31:58,566 Run Parameters
-   acispy: [INFO     ] 2021-12-10 13:31:58,566 --------------
-   acispy: [INFO     ] 2021-12-10 13:31:58,566 Modeled Temperature: fptemp_11
-   acispy: [INFO     ] 2021-12-10 13:31:58,566 Start Datestring: 2020:148:14:45:00.000
-   acispy: [INFO     ] 2021-12-10 13:31:58,566 Length of state in hours: 24.0
-   acispy: [INFO     ] 2021-12-10 13:31:58,566 Stop Datestring: 2020:150:06:55:18.000
-   acispy: [INFO     ] 2021-12-10 13:31:58,566 Initial Temperature: -115.0 degrees C
-   acispy: [INFO     ] 2021-12-10 13:31:58,566 CCD/FEP Count: 4
-   acispy: [INFO     ] 2021-12-10 13:31:58,566 Quaternion: [-0.04470333, 0.63502552, -0.67575906, 0.37160988]
-   acispy: [INFO     ] 2021-12-10 13:31:58,566 Pitch: 155.13828486037553
-   acispy: [INFO     ] 2021-12-10 13:31:58,566 Off-nominal Roll: 10.637704660891393
-   acispy: [INFO     ] 2021-12-10 13:31:58,566 Detector Housing Heater: OFF
-   acispy: [INFO     ] 2021-12-10 13:31:58,568 Model Result
-   acispy: [INFO     ] 2021-12-10 13:31:58,568 ------------
-   acispy: [INFO     ] 2021-12-10 13:31:58,569 The focal plane is never cold for this ECS measurement.
-   acispy: [INFO     ] 2021-12-10 13:31:58,570 The limit of -111.0 degrees C will be reached at 2020:149:06:02:38.816, after 55.058815999984745 ksec.
-   acispy: [INFO     ] 2021-12-10 13:31:58,571 The limit is reached before the end of the observation.
-   acispy: [INFO     ] 2021-12-10 13:31:59,331 Image of the model run has been written to ecs_run_fptemp_11_4chip_2020:148:14:45:00.png.
+   acispy: [INFO     ] 2024-06-09 19:10:32,655 Using model for acisfp from chandra_models version = 3.53
+   Fetching msid: aoeclips over 2020:148:14:22:22.816 to 2020:150:03:05:26.816
+   acispy: [INFO     ] 2024-06-09 19:10:33,743 Run Parameters
+   acispy: [INFO     ] 2024-06-09 19:10:33,743 --------------
+   acispy: [INFO     ] 2024-06-09 19:10:33,743 Modeled Temperature: fptemp_11
+   acispy: [INFO     ] 2024-06-09 19:10:33,743 Start Datestring: 2020:148:14:45:00.000
+   acispy: [INFO     ] 2024-06-09 19:10:33,743 Length of state in hours: 24.0
+   acispy: [INFO     ] 2024-06-09 19:10:33,743 Stop Datestring: 2020:150:02:45:00.000
+   acispy: [INFO     ] 2024-06-09 19:10:33,743 Initial Temperature: -115.0 degrees C
+   acispy: [INFO     ] 2024-06-09 19:10:33,743 CCD/FEP Count: 4
+   acispy: [INFO     ] 2024-06-09 19:10:33,743 Quaternion: [-0.04470333, 0.63502552, -0.67575906, 0.37160988]
+   acispy: [INFO     ] 2024-06-09 19:10:33,743 Pitch: 155.13828486037553
+   acispy: [INFO     ] 2024-06-09 19:10:33,743 Off-nominal Roll: 10.637704660891393
+   acispy: [INFO     ] 2024-06-09 19:10:33,743 Detector Housing Heater: OFF
+   acispy: [INFO     ] 2024-06-09 19:10:33,744 Model Result
+   acispy: [INFO     ] 2024-06-09 19:10:33,744 ------------
+   acispy: [INFO     ] 2024-06-09 19:10:33,745 The focal plane is never cold for this ECS measurement.
+   acispy: [INFO     ] 2024-06-09 19:10:33,745 The limit of -86.0 degrees C is never reached.
+   acispy: [INFO     ] 2024-06-09 19:10:34,029 Image of the model run has been written to ecs_run_fptemp_11_4chip_2020:148:14:45:00.png.
 
 .. image:: _images/ecs_run2.png
 
@@ -357,34 +350,34 @@ To run the 1DPAMZT model with the following conditions:
 * Length of ECS run: 24 hours
 * Initial temperature: 10.0 degrees C
 * CCD count: 6
-* Vehicle load: SEP0917C
+* Using attitude profile from vehicle loads
 
 .. code-block:: bash
 
-    [~]$ simulate_ecs_run dpa 2017:256:03:20:00 24 10.0 SEP0917C 6
+    [~]$ simulate_ecs_run dpa 2017:256:03:20:00 24 10.0 vehicle 6
 
 Returns:
 
 .. code-block:: text
 
-   acispy: [INFO     ] 2021-12-10 13:35:11,194 Modeling a 6-chip state concurrent with the SEP0917C vehicle loads.
-   acispy: [INFO     ] 2021-12-10 13:35:13,604 Using model for dpa from chandra_models version = 3.37
-   Fetching msid: aoeclips over 2017:256:02:54:54.816 to 2017:257:19:49:26.816
-   acispy: [INFO     ] 2021-12-10 13:35:13,984 Run Parameters
-   acispy: [INFO     ] 2021-12-10 13:35:13,984 --------------
-   acispy: [INFO     ] 2021-12-10 13:35:13,984 Modeled Temperature: 1dpamzt
-   acispy: [INFO     ] 2021-12-10 13:35:13,984 Start Datestring: 2017:256:03:20:00.000
-   acispy: [INFO     ] 2021-12-10 13:35:13,984 Length of state in hours: 24.0
-   acispy: [INFO     ] 2021-12-10 13:35:13,984 Stop Datestring: 2017:257:19:30:18.000
-   acispy: [INFO     ] 2021-12-10 13:35:13,984 Initial Temperature: 10.0 degrees C
-   acispy: [INFO     ] 2021-12-10 13:35:13,984 CCD/FEP Count: 6
-   acispy: [INFO     ] 2021-12-10 13:35:13,985 Detector Housing Heater: OFF
-   acispy: [INFO     ] 2021-12-10 13:35:13,986 Model Result
-   acispy: [INFO     ] 2021-12-10 13:35:13,986 ------------
-   acispy: [INFO     ] 2021-12-10 13:35:13,990 The limit of 37.5 degrees C will be reached at 2017:256:11:34:14.816, after 29.65481599998474 ksec.
-   acispy: [INFO     ] 2021-12-10 13:35:13,990 The limit is reached before the end of the observation.
-   acispy: [WARNING  ] 2021-12-10 13:35:13,990 This observation is NOT safe from a thermal perspective.
-   acispy: [INFO     ] 2021-12-10 13:35:15,138 Image of the model run has been written to ecs_run_1dpamzt_6chip_2017:256:03:20:00.png.
+   acispy: [INFO     ] 2024-06-09 19:11:45,908 Modeling a 6-chip state concurrent with states from the following vehicle loads: {'SEP1317B', 'SEP0917C'}
+   acispy: [INFO     ] 2024-06-09 19:11:46,687 Using model for dpa from chandra_models version = 3.53
+   Fetching msid: aoeclips over 2017:256:02:54:54.816 to 2017:257:15:37:58.816
+   acispy: [INFO     ] 2024-06-09 19:11:46,883 Run Parameters
+   acispy: [INFO     ] 2024-06-09 19:11:46,883 --------------
+   acispy: [INFO     ] 2024-06-09 19:11:46,883 Modeled Temperature: 1dpamzt
+   acispy: [INFO     ] 2024-06-09 19:11:46,883 Start Datestring: 2017:256:03:20:00.000
+   acispy: [INFO     ] 2024-06-09 19:11:46,883 Length of state in hours: 24.0
+   acispy: [INFO     ] 2024-06-09 19:11:46,883 Stop Datestring: 2017:257:15:20:00.000
+   acispy: [INFO     ] 2024-06-09 19:11:46,883 Initial Temperature: 10.0 degrees C
+   acispy: [INFO     ] 2024-06-09 19:11:46,883 CCD/FEP Count: 6
+   acispy: [INFO     ] 2024-06-09 19:11:46,883 Detector Housing Heater: OFF
+   acispy: [INFO     ] 2024-06-09 19:11:46,883 Model Result
+   acispy: [INFO     ] 2024-06-09 19:11:46,883 ------------
+   acispy: [INFO     ] 2024-06-09 19:11:46,884 The limit of 38.5 degrees C will be reached at 2017:256:12:45:18.816, after 33.918815999984744 ksec.
+   acispy: [INFO     ] 2024-06-09 19:11:46,884 The limit is reached before the end of the observation.
+   acispy: [WARNING  ] 2024-06-09 19:11:46,884 This observation is NOT safe from a thermal perspective.
+   acispy: [INFO     ] 2024-06-09 19:11:47,370 Image of the model run has been written to ecs_run_1dpamzt_6chip_2017:256:03:20:00.png.
 
 .. image:: _images/ecs_run3.png
 

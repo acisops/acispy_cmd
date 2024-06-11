@@ -1,8 +1,22 @@
 #!/usr/bin/env python
 from setuptools import setup
-import glob
 
-scripts = glob.glob("scripts/*")
+
+entry_points = {
+    "console_scripts": [
+        "simulate_ecs_run = acispy_cmd.simulate_ecs_run:main",
+        "plot_msid = acispy_cmd.plot_msid",
+        "current_load_page = acispy_cmd.current_load_page:main",
+        "dpa_temperature_plots = acispy_cmd.dpa_temperature_plots",
+        "make_sop_table = acispy_cmd.make_sop_table",
+        "multiplot_archive = acispy_cmd.multiplot_archive",
+        "multiplot_tracelog = acispy_cmd.multiplot_tracelog",
+        "phase_histogram_plot = acispy_cmd.phase_histogram_plot",
+        "phase_scatter_plot = acispy_cmd.phase_scatter_plot",
+        "plot_10day_tl = acispy_cmd.plot_10day_tl",
+        "plot_model = acispy_cmd.plot_model",
+    ],
+}
 
 setup(name='acispy_cmd',
       packages=['acispy_cmd'],
@@ -13,10 +27,10 @@ setup(name='acispy_cmd',
       author_email='john.zuhone@cfa.harvard.edu',
       url='http://github.com/acisops/acispy_cmd',
       install_requires=["numpy>=1.12.1","requests","astropy"],
-      scripts=scripts,
       classifiers=[
           'Intended Audience :: Science/Research',
           'Operating System :: OS Independent',
           'Programming Language :: Python :: 3'
       ],
+      entry_points=entry_points,
       )
