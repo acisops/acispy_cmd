@@ -16,10 +16,12 @@ import bisect
 import logging
 from kadi.commands.states import decode_power, get_states
 from kadi.commands import get_cmds
-from kadi.events import load_segments, rad_zones, dsn_comms
+from kadi.events import load_segments, rad_zones, dsn_comms, scs107s
 from pathlib import Path
 import warnings
 import astropy.units as u
+import chandra_limits as cl
+
 
 mylog.setLevel(logging.ERROR)
 
@@ -96,10 +98,6 @@ low_red_limits = {"tmp_fep1_mong": -10.0,
                   "tmp_fep1_actel": -10.0,
                   "tmp_bep_pcb": -10.0}
 
-fp_limits = {"acis_i": -112.0,
-             "acis_s": -111.0,
-             "acis_hot": -109.0,
-             "cold_ecs": -119.5}
 
 obsid_link_base = "https://icxc.harvard.edu/cgi-bin/mp/target_param.cgi?"
 mit_link_base = "http://acisweb.mit.edu/cgi-bin/get-atbls?tag="
@@ -124,19 +122,33 @@ def detect_safing_actions(t):
 
 
 def find_the_load(t):
-    load = None
+    load_name = None
+    load_time = None
     ls = load_segments.filter(start=t-86400.0, stop=t+86400.0)
     try:
         if len(ls) > 0:
             for l in ls:
                 if t > l.tstart:
-                    load = l.load_name
+                    load_name = l.load_name
+                    load_time = l.start
                 else:
                     break
     except:
         pass
     del ls
-    return load
+    s107s = scs107s.filter(start=t-86400.0, stop=t+86400.0)
+    try:
+        if len(s107s) > 0:
+            for s in s107s:
+                if t > s.tstart:
+                    load_name = "SCS-107"
+                    load_time = s.start
+                else:
+                    break
+    except:
+        pass
+    del s107s
+    return load_name, load_time
 
 
 def get_radzones(begin_time, last_time):
@@ -406,13 +418,13 @@ def main():
         now_time_utc = now_finder.get_now()
         now_time_str = now_time_utc.strftime("%Y:%j:%H:%M:%S")
         now_time_secs = date2secs(now_time_str)
-        now_time_local = now_time_utc.astimezone(tz=None)
+        now_time_local = now_time_utc.replace(tzinfo=timezone.utc).astimezone(tz=None)
     
-        load_name = find_the_load(now_time_secs)
+        load_name, load_time = find_the_load(now_time_secs)
     
         if load_name is None:
             load_name = old_load_name
-        else:
+        elif load_name != "SCS-107":
             old_load_name = load_name
     
         load_year = "20%s" % load_name[-3:-1]
@@ -460,7 +472,12 @@ def main():
         last_reload_date = CxoTime(last_reload_time).date
         last_reload_loc = datetime.strptime(last_reload_date, "%Y:%j:%H:%M:%S.%f").replace(tzinfo=timezone.utc).astimezone(tz=None).strftime("%D %H:%M:%S")
     
-        outlines = ["<font face=\"times\">This is the <a href=\"%s\"><font style=\"color:blue\">%s</font></a> load.</font>" % (lr_link, load_name),
+        if load_name == "SCS-107":
+            load_string = f"<font color=\"red\">SCS-107 detected at {load_time}.</font>"
+        else:
+            load_string = f"This is the <a href=\"{lr_link}\"><font style=\"color:blue\">{load_name}</font></a> load."
+            
+        outlines = [f"<font face=\"times\">{load_string}</font>",
                     " ", " ", 
                     "<font face=\"times\">The last data update was at %s (%s ET).</font>" % (last_reload_date, last_reload_loc),
                     " ", " "]
@@ -485,10 +502,7 @@ def main():
             title_str += "\nCurrent instrument: %s, Current ObsID: %d" % (ds_m["states", "instrument"][now_time_str],
                                                                           ds_m["states", "obsid"][now_time_str])
             if temp == "fptemp_11":
-                dp.add_hline(fp_limits["acis_i"], color='purple', ls='--')
-                dp.add_hline(fp_limits["acis_s"], color='blue', ls='--')
-                dp.add_hline(fp_limits["cold_ecs"], color='dodgerblue', ls='--')
-                dp.add_hline(fp_limits["acis_hot"], color='red', ls='--')
+                pass
             else:
                 dp.add_hline(planning_limits[temp], color='g')
                 dp.add_hline(yellow_limits[temp], color='gold')
@@ -556,8 +570,9 @@ def main():
         plt.close("all")
     
         tm_link = tm_link_base % (load_year, load_dir)
-        footer = ["<a name=\"plots\"><h2><font face=\"times\">Temperature Models</font></h2></a>",
-                  "<a href=\"%s\"><font face=\"times\" color=\"blue\">Full thermal models for %s</font></a><p />" % (tm_link, load_name)]
+        footer = ["<a name=\"plots\"><h2><font face=\"times\">Temperature Models</font></h2></a>"]
+        if load_name != "SCS-107":
+            footer.append("<a href=\"%s\"><font face=\"times\" color=\"blue\">Full thermal models for %s</font></a><p />" % (tm_link, load_name))
     
         for fig in plots:
             footer.append("<img src=\"current_%s.png\" />" % fig)
