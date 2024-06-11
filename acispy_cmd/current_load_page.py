@@ -16,9 +16,10 @@ import bisect
 import logging
 from kadi.commands.states import decode_power, get_states
 from kadi.commands import get_cmds
-from kadi.events import load_segments, rad_zones
+from kadi.events import load_segments, rad_zones, dsn_comms
 from pathlib import Path
 import warnings
+import astropy.units as u
 
 mylog.setLevel(logging.ERROR)
 
@@ -277,23 +278,26 @@ def find_cti_runs(states):
     return cti_runs
 
 
-def get_comms():
-    comms = []
+def get_comms(start, stop):
+    comm_times = []
     durations = []
-    try:
-        with open(dsnfile) as f:
-            for line in f.readlines()[2:]:
-                words = line.strip().split()
-                bot = datetime.strptime("%s:%s:00:00:00" % (words[-4], words[-3].split(".")[0]), "%Y:%j:%H:%M:%S")
-                eot = datetime.strptime("%s:%s:00:00:00" % (words[-2], words[-1].split(".")[0]), "%Y:%j:%H:%M:%S")
-                time_bot = date2secs(bot.strftime("%Y:%j:%H:%M:%S"))+86400.0*(float(words[-3]) % 1)
-                time_eot = date2secs(eot.strftime("%Y:%j:%H:%M:%S"))+86400.0*(float(words[-1]) % 1)
-                durations.append((time_eot-time_bot)/60.0)
-                comms.append((CxoTime(time_bot).date, CxoTime(time_eot).date))
-    except FileNotFoundError:
-        comms = None
-        durations = None
-    return comms, durations
+    comms = dsn_comms.filter(start=start, stop=stop)
+    for comm in comms:
+        words = comm.start.split(":")
+        words[2] = comm.bot[:2]
+        words[3] = comm.bot[2:]
+        comm_start = CxoTime(":".join(words))
+        if comm_start.secs < comm.tstart:
+            comm_start += 1 * u.day
+        words = comm.stop.split(":")
+        words[2] = comm.eot[:2]
+        words[3] = comm.eot[2:]
+        comm_stop = CxoTime(":".join(words))
+        if comm_stop.secs > comm.tstop:
+            comm_stop -= 1 * u.day
+        comm_times.append([comm_start.yday, comm_stop.yday])
+        durations.append((comm_stop - comm_start).to_value("min"))
+    return comm_times, durations
 
 
 def insert_comms(cmdtimes, cmdlines, comms, durations, tmin, tmax):
@@ -437,7 +441,7 @@ def main():
         if reload or cmds is None:
             cmds = get_cmds(begin_time_str, last_time_str)
             cmds.fetch_params()
-            comms, durations = get_comms()
+            comms, durations = get_comms(begin_time_str, last_time_str)
             radzones = get_radzones(begin_time_str, last_time_str)
             model_start = now_time_secs - 4.0*86400.0
             model_end = now_time_secs + 4.0*86400.0
