@@ -146,6 +146,7 @@ def find_the_load(t):
                     if t > s.tstart and t > load_tstart:
                         load_name = "SCS-107"
                         load_time = s.start
+                        load_scs = "107"
                     else:
                         break
         except:
