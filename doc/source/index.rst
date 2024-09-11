@@ -24,18 +24,19 @@ shell (or a variant):
 
 .. code-block:: bash
 
-    alias acisska='eval "$(/data/acis/miniconda3/bin/conda shell.bash hook)"; \
-                   export SKA=/proj/sot/ska; \
-                   conda activate ska'
+   alias acisska='eval "$(/data/acis/mambaforge/bin/conda shell.zsh hook)"; \
+                  export SKA=/proj/sot/ska; \
+                  conda activate ska'
 
 Or, if you are a mascohist or are otherwise compelled to use the C shell or a 
 variant of it, add this alias to your ``.cshrc.user``:
 
 .. code-block:: bash
 
-    alias acisska 'source /data/acis/miniconda3/etc/profile.d/conda.csh; \
-                   setenv SKA /proj/sot/ska; \
-                   conda activate ska'
+   alias acisska 'source /data/acis/mambaforge/etc/profile.d/conda.csh; \
+                  setenv SKA /proj/sot/ska; \
+                  conda activate ska'
+
 .. warning::
 
     The ACIS Ops Ska Python stack should be used in a "clean" terminal window 
