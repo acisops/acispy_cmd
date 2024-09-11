@@ -26,6 +26,7 @@ import chandra_limits as cl
 mylog.setLevel(logging.ERROR)
 
 warnings.filterwarnings("ignore", "erfa")
+warnings.filterwarnings("ignore", "redundantly")
 
 chandra_models_path = Path(f"{os.environ['SKA']}/data/chandra_models/chandra_models/xija")
 
