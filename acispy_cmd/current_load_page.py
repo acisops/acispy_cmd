@@ -14,7 +14,7 @@ import numpy as np
 from Ska.Matplotlib import cxctime2plotdate
 import bisect
 import logging
-from kadi.commands.states import decode_power, get_states
+from kadi.commands.states import decode_power, get_states, DEFAULT_STATE_KEYS
 from kadi.commands import get_cmds
 from kadi.events import load_segments, rad_zones, dsn_comms, scs107s
 from pathlib import Path
@@ -22,6 +22,8 @@ import warnings
 import astropy.units as u
 import chandra_limits as cl
 
+
+state_keys = DEFAULT_STATE_KEYS + ("hrc_15v", "hrc_24v", "hrc_i", "hrc_s",)
 
 mylog.setLevel(logging.ERROR)
 
@@ -461,7 +463,7 @@ def main():
             radzones = get_radzones(begin_time_str, last_time_str)
             model_start = now_time_secs - 4.0*86400.0
             model_end = now_time_secs + 4.0*86400.0
-            states = get_states(model_start, model_end, 
+            states = get_states(model_start, model_end, state_keys=state_keys,
                                 merge_identical=True).as_array()
             for temp in temps:
                 if temp == "fptemp_11":
