@@ -464,7 +464,11 @@ def main():
             states = get_states(model_start, model_end, 
                                 merge_identical=True).as_array()
             for temp in temps:
-                model_spec = chandra_models_path / short_name[temp] / f"{short_name[temp]}_spec.json" 
+                if temp == "fptemp_11":
+                    spec_filename = "acisfp_spec_matlab.json"
+                else:
+                    spec_filename = f"{short_name[temp]}_spec.json"
+                model_spec = chandra_models_path / short_name[temp] / spec_filename
                 T_init = ds_tlm["msids", temp][model_start-700.0:model_start+700.0].value.mean()
                 ds_models[temp] = acispy.ThermalModelRunner(temp, model_start, model_end,
                                                             states=states, T_init=T_init,
