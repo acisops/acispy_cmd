@@ -34,69 +34,90 @@ chandra_models_path = Path(f"{os.environ['SKA']}/data/chandra_models/chandra_mod
 
 date2secs = lambda t: CxoTime(t).secs
 
-dsnfile = "/data/acis/dsn_summary.dat"
+header = '''
+<?xml version="1.0" encoding="UTF-8">
+<!DOCTYPE html PUBLIC "-//W3C/DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="refresh" content="30" />
+<title>Current ACIS Load Real-Time</title>
+<link href="lr_web.css" rel="stylesheet" type="text/css">
+</head>
+<body text="#000000" bgcolor="#ffffff" link="#ff0000" vlink="#ffff22" alink="#7500FF">
+<pre>
+<h1><font face="times">Current ACIS Load Real-Time</font></h1>
+<a name="review"><h2><font face="times">Load Commands</font></h2></a>'''
 
-header = ['<?xml version="1.0" encoding="UTF-8">',
-          '<!DOCTYPE html PUBLIC "-//W3C/DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">',
-          '<html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">',
-          '<head>\n<meta http-equiv="refresh" content="30" />',
-          '<title>Current ACIS Load Real-Time</title>',
-          '<link href="lr_web.css" rel="stylesheet" type="text/css">\n</head>',
-          '<body text="#000000" bgcolor="#ffffff" link="#ff0000" vlink="#ffff22" alink="#7500FF">\n<pre>',
-          '<h1><font face="times">Current ACIS Load Real-Time</font></h1>',
-          "<a name=\"review\"><h2><font face=\"times\">Load Commands</font></h2></a>"]
+lr_web_css = """
+commline {
+    background-color: #26DDCC;
+}
+obsidline {
+    background-color: pink;
+}
+padtime {
+    background-color: yellow;
+}
+mechline {
+    background-color: orange;
+}
+.scrollable-window {
+    height: 600px;
+    border: 2px solid #ccc;
+    padding: 10px;
+    overflow-y: auto;
+    background-color: #f9f9f9;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+"""
 
-lr_web_css = [
-    "commline {",
-    "    background-color: #26DDCC;",
-    "}\n",
-    "obsidline {",
-    "    background-color: pink;",
-    "}\n",
-    "padtime {",
-    "    background-color: yellow;",
-    "}\n",
-    "mechline {",
-    "    background-color: orange;",
-    "}"
-]
+
+script = '''
+<script>
+    function centerElement() {
+      const container = document.getElementById("scrollableContainer");
+      const targetElement = document.getElementById("now");
+
+      // Calculate the position to center the target element in the scrollable window
+      const offsetTop = targetElement.offsetTop - container.offsetTop;
+      const containerHeight = container.clientHeight;
+      const targetHeight = targetElement.clientHeight;
+
+      // Adjust scrollTop to place the target element in the middle
+      container.scrollTop = offsetTop - (containerHeight / 2) + (targetHeight / 2);
+    }
+
+    // Automatically center the element on page load
+    document.addEventListener("DOMContentLoaded", centerElement);
+</script>
+'''
 
 temps = ["fptemp_11", "1dpamzt", "1deamzt", "1pdeaat", "tmp_fep1_mong",
          "tmp_fep1_actel", "tmp_bep_pcb"]
 
 plot_limits = {"fptemp_11": (-120.0, -95.0),
-               "1deamzt": (5.0, 43.0),
-               "1dpamzt": (5.0, 42.0),
+               "1deamzt": (5.0, 44.0),
+               "1dpamzt": (5.0, 44.0),
                "1pdeaat": (15.0, 63.0),
                "tmp_fep1_mong": (-1.0, 55.0),
                "tmp_fep1_actel": (-1.0, 54.0),
                "tmp_bep_pcb": (5.0, 50.0)}
 
-planning_limits = {"1deamzt": 37.5,
-                   "1dpamzt": 37.5,
-                   "1pdeaat": 52.5,
-                   "tmp_fep1_mong": 47.0,
-                   "tmp_fep1_actel": 46.0,
-                   "tmp_bep_pcb": 42.0}
-yellow_limits = {"1deamzt": 39.5,
-                 "1dpamzt": 39.5,
-                 "1pdeaat": 57.0,
-                 "tmp_fep1_mong": 49.0,
-                 "tmp_fep1_actel": 48.0,
-                 "tmp_bep_pcb": 44.0}
-red_limits = {"1deamzt": 42.5,
-              "1dpamzt": 41.5,
-              "1pdeaat": 62.0,
-              "tmp_fep1_mong": 54.0,
-              "tmp_fep1_actel": 53.0,
-              "tmp_bep_pcb": 49.0}
 
-low_planning_limits = {"tmp_fep1_mong": 2.0,
-                       "tmp_fep1_actel": 2.0,
-                       "tmp_bep_pcb": 8.5}
-low_yellow_limits = {"tmp_fep1_mong": 0.0,
-                     "tmp_fep1_actel": 0.0,
-                     "tmp_bep_pcb": 6.5}
+limit_classes = {
+    "1deamzt": cl.DEALimit,
+    "1dpamzt": cl.DPALimit,
+    "1pdeaat": cl.PSMCLimit,
+    "fptemp_11": cl.ACISFPLimit,
+    "tmp_fep1_actel": cl.FEP1ActelLimit,
+    "tmp_fep1_mong": cl.FEP1MongLimit,
+    "tmp_bep_pcb": cl.BEPPCBLimit
+}
+                   
+hi_red_limits = {"tmp_fep1_mong": 54.0,
+                 "tmp_fep1_actel": 53.0,
+                 "tmp_bep_pcb": 49.0}        
 low_red_limits = {"tmp_fep1_mong": -10.0,
                   "tmp_fep1_actel": -10.0,
                   "tmp_bep_pcb": -10.0}
@@ -172,7 +193,7 @@ def process_commands(now_time_utc, cmds):
     end_time_secs = now_time_secs + 86400.0
     start_time_secs = now_time_secs - 2.0*86400.0
 
-    cmdlines = []
+    cmdlines = ["<div class=\"scrollable-window\" id=\"scrollableContainer\">"]
     cmdtimes = []
     simtrans = []
 
@@ -207,9 +228,7 @@ def process_commands(now_time_utc, cmds):
         param = None
 
         if cmd["type"] == "ACISPKT":
-            param = "\t<a href=\"%s%s\"><font color=\"blue\">%s</font></a>" % (mit_link_base, 
-                                                                               cmd["tlmsid"], 
-                                                                               cmd["tlmsid"])
+            param = f"\t<a href=\"{mit_link_base}{cmd['tlmsid']}\" target=\"_blank\" rel=\"noopener noreferrer\"><font color=\"blue\">{cmd['tlmsid']}</font></a>"
             if cmd["tlmsid"].startswith("XCZ") or cmd["tlmsid"].startswith("XTZ"):
                 in_science = True
                 duration = the_time
@@ -238,7 +257,7 @@ def process_commands(now_time_utc, cmds):
         elif cmd["type"] == "ORBPOINT":
             param = cmd["event_type"]
 
-        line = "%s\t%s\t%s" % (cmd["date"], cmd["type"], param)
+        line = f"{cmd['date']}\t{cmd['type']}\t{param}"
 
         if highlight is not None:
             # Pad lines so highlighting happens across the page
@@ -249,7 +268,7 @@ def process_commands(now_time_utc, cmds):
         if cmd["type"] == "MP_OBSID":
             if param < 40000:
                 line = line.replace(str(param),
-                                    "<a href=\"%s%s\"><font color=\"blue\">%s</font></a>" % (obsid_link_base, param, param))
+                                    f"<a href=\"{obsid_link_base}{param}\"><font color=\"blue\">{param}</font></a>")
 
         cmdlines.append(line+"\n")
         cmdtimes.append(the_time)
@@ -274,11 +293,11 @@ def process_commands(now_time_utc, cmds):
                 outcome = "%s; %s" % (feps, vids)
             elif cmd["tlmsid"] == "WSVIDALLDN":
                 outcome = "All vids down"
-            line = "==> WSPOW COMMAND LOADS: %s\n" % outcome
+            line = f"==> WSPOW COMMAND LOADS: {outcome}\n"
             cmdlines.append(line)
             cmdtimes.append(the_time)
 
-    cmdlines += ["</pre>", "</body>"]
+    cmdlines += ["</div>", "</pre>"]
 
     return cmdtimes, cmdlines, simtrans
 
@@ -339,10 +358,10 @@ def insert_comms(cmdtimes, cmdlines, comms, durations, tmin, tmax):
 
 
 def insert_now_time(cmdtimes, cmdlines, now_time_secs, now_time_utc, now_time_local):
-    new_line = '<a name="now"></a>NOW: %s (%s ET)' % (now_time_utc.strftime("%Y:%j:%H:%M:%S"),
+    new_line = '<a id="now" name="now"></a>NOW: %s (%s ET)' % (now_time_utc.strftime("%Y:%j:%H:%M:%S"),
                                                       now_time_local.strftime("%D %H:%M:%S"))
     new_line += ' ' * (100 - len(new_line))
-    new_line = '<font style="background-color:#5AC831"><b>%s</b></font>\n' % new_line
+    new_line = f'<font style="background-color:#5AC831"><b>{new_line}</b></font>\n'
     idx = bisect.bisect_right(cmdtimes, now_time_secs)
     cmdtimes.insert(idx, now_time_secs)
     cmdlines.insert(idx, new_line)
@@ -467,7 +486,7 @@ def main():
                                 merge_identical=True).as_array()
             for temp in temps:
                 if temp == "fptemp_11":
-                    spec_filename = "acisfp_spec_matlab.json"
+                    spec_filename = "acisfp_spec_matlab.json" 
                 else:
                     spec_filename = f"{short_name[temp]}_spec.json"
                 model_spec = chandra_models_path / short_name[temp] / spec_filename
@@ -487,11 +506,12 @@ def main():
         else:
             load_string = f"This is the <a href=\"{lr_link}\"><font style=\"color:blue\">{load_name}</font></a> load."
             
-        outlines = [f"<font face=\"times\">{load_string}</font>",
-                    " ", " ", 
-                    "<font face=\"times\">The last data update was at %s (%s ET).</font>" % (last_reload_date, last_reload_loc),
-                    " ", " "]
-    
+        outlines = [
+            f"<font face=\"times\">{load_string}</font>\n",
+            f"<font face=\"times\">The last data update was at {last_reload_date} ({last_reload_loc} ET).</font>\n",
+            "<button onclick=\"centerElement()\">Reset to Current Time</button>"
+        ]
+            
         cmdtimes, cmdlines, simtrans = process_commands(now_time_utc, cmds)
         if comms is not None:
             insert_comms(cmdtimes, cmdlines, comms, durations, begin_time_secs, end_time_secs)
@@ -502,27 +522,54 @@ def main():
     
         for temp in temps:
             ds_m = ds_models[temp]
-            dp = acispy.DatePlot(ds_m, ("model", temp), field2="pitch", color="red",
+            dp = acispy.DatePlot(ds_tlm, ("msids", temp), field2="pitch", color="blue",
                                  figsize=(15, 10))
-            acispy.DatePlot(ds_tlm, ("msids", temp), color="blue", plot=dp)
+            if not temp.startswith("tmp_"):
+                acispy.DatePlot(ds_m, ("model", temp), color="red", plot=dp)
             dp.add_vline(now_time_str, lw=3)
             title_str = "%s\nCurrent %s prediction: %.2f $\mathrm{^\circ{C}}$\nCurrent pitch: %.2f degrees"
             title_str %= (now_time_str, temp.upper(), ds_m["model", temp][now_time_str].value,
                           ds_m["pitch"][now_time_str].value)
             title_str += "\nCurrent instrument: %s, Current ObsID: %d" % (ds_m["states", "instrument"][now_time_str],
                                                                           ds_m["states", "obsid"][now_time_str])
+
+            if temp == "fptemp_11":
+                spec_filename = "acisfp_spec_matlab.json"
+            else:
+                spec_filename = f"{short_name[temp]}_spec.json"
+            model_spec = chandra_models_path / short_name[temp] / spec_filename
+            limit_obj = limit_classes[temp](model_spec=model_spec)
+            if temp == "fptemp_11":
+                obs_list = cl.determine_obsid_info(states)
+                limit_obj.set_obs_info(obs_list)
+            upper_limit = limit_obj.get_limit_line(states)
+            
+            upper_limit.plot(
+                fig_ax=(dp.fig, dp.ax),
+                lw=3,
+                zorder=2,
+                use_colors=True,
+                show_changes=False,
+            )
+
             if temp == "fptemp_11":
                 pass
             else:
-                dp.add_hline(planning_limits[temp], color='g')
-                dp.add_hline(yellow_limits[temp], color='gold')
-                dp.add_hline(red_limits[temp], color='r')
+                dp.add_hline(limit_obj.limits["yellow_hi"]["value"], color='gold')
+                if "odb.warning.high" in limit_obj.limits:
+                    dp.add_hline(limit_obj.limits["odb.warning.high"]["value"], color='r')
             if temp.startswith("tmp_"):
-                dp.add_hline(low_planning_limits[temp], color='g')
-                dp.add_hline(low_yellow_limits[temp], color='gold')
+                lower_limit = limit_obj.get_limit_line(states, which="low")
+                lower_limit.plot(
+                    fig_ax=(dp.fig, dp.ax),
+                    lw=3,
+                    zorder=2,
+                    use_colors=True,
+                    show_changes=False,
+                )
+                dp.add_hline(limit_obj.limits["yellow_lo"]["value"], color='gold')
+                dp.add_hline(hi_red_limits[temp], color='r')
                 dp.add_hline(low_red_limits[temp], color='r')
-            if temp == "1dpamzt":
-                dp.add_hline(12.0, color='dodgerblue', ls='--')
             dp.set_title(title_str)
             dp.set_ylim(plot_limits[temp][0], plot_limits[temp][1])
             add_annotations(dp, begin_time_secs, end_time_secs, simtrans, comms, cti_runs, radzones)
@@ -587,15 +634,15 @@ def main():
         for fig in plots:
             footer.append("<img src=\"current_%s.png\" />" % fig)
             footer.append("<p />")
-    
-        f = open(outfile, "w")
-        f.write("\n".join(header+outlines+footer))
-        f.close()
+        footer.append(script)
+        footer.append("</body>")
+        
+        with open(outfile, "w") as f:
+            f.write(header+"\n".join(outlines+footer))
     
         if not os.path.exists(cssfile):
-            f = open(cssfile, "w")
-            f.write("\n".join(lr_web_css))
-            f.close()
+            with open(cssfile, "w") as f:
+                f.write(lr_web_css)
     
         if now_time_secs - last_reload_time > 600.0:
             reload = True
