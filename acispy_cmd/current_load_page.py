@@ -523,10 +523,13 @@ def main():
     
         for temp in temps:
             ds_m = ds_models[temp]
-            dp = acispy.DatePlot(ds_tlm, ("msids", temp), field2="pitch", color="blue",
-                                 figsize=(15, 10))
-            if not temp.startswith("tmp_"):
-                acispy.DatePlot(ds_m, ("model", temp), color="red", plot=dp)
+            if temp.startswith("tmp_"):
+                dp = acispy.DatePlot(ds_tlm, ("msids", temp), field2="pitch", color="blue",
+                                     figsize=(15, 10))
+            else:
+                dp = acispy.DatePlot(ds_m, ("model", temp), field2="pitch", color="red",
+                                     figsize=(15, 10))
+                acispy.DatePlot(ds_tlm, ("msids", temp), color="blue", plot=dp)
             dp.add_vline(now_time_str, lw=3)
             title_str = "%s\nCurrent %s prediction: %.2f $\mathrm{^\circ{C}}$\nCurrent pitch: %.2f degrees"
             title_str %= (now_time_str, temp.upper(), ds_m["model", temp][now_time_str].value,
@@ -576,7 +579,7 @@ def main():
             add_annotations(dp, begin_time_secs, end_time_secs, simtrans, comms, cti_runs, radzones)
             dp.set_xlim(begin_time_str, end_time_str)
             if temp == "fptemp_11":
-                dp.annotate_obsids(-111.5, ywidth=1.0, color='dodgerblue', states=states,
+                dp.annotate_obsids(-111.5, ywidth=1.0, color='dodgerblue',
                                    datestart=begin_time_str, datestop=end_time_str,
                                    txtheight=0.25, txtloc=0.1, fontsize=12)
             dp.fig.subplots_adjust(right=0.8)
