@@ -576,7 +576,7 @@ def main():
             add_annotations(dp, begin_time_secs, end_time_secs, simtrans, comms, cti_runs, radzones)
             dp.set_xlim(begin_time_str, end_time_str)
             if temp == "fptemp_11":
-                dp.annotate_obsids(-111.5, ywidth=1.0, color='dodgerblue', 
+                dp.annotate_obsids(-111.5, ywidth=1.0, color='dodgerblue', states=states,
                                    datestart=begin_time_str, datestop=end_time_str,
                                    txtheight=0.25, txtloc=0.1, fontsize=12)
             dp.fig.subplots_adjust(right=0.8)
