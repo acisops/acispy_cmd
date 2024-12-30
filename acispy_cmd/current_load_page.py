@@ -123,7 +123,8 @@ low_red_limits = {"tmp_fep1_mong": -10.0,
                   "tmp_bep_pcb": -10.0}
 
 
-obsid_link_base = "https://icxc.harvard.edu/cgi-bin/mp/target_param.cgi?"
+#obsid_link_base = "https://icxc.harvard.edu/cgi-bin/mp/target_param.cgi?"
+obsid_link_base = "https://cda.harvard.edu/chaser/startViewer.action"
 mit_link_base = "http://acisweb.mit.edu/cgi-bin/get-atbls?tag="
 lr_link_base = "http://cxc.cfa.harvard.edu/acis/lr_texts/%s/%s_lr.html"
 tm_link_base = "http://cxc.cfa.harvard.edu/acis/Thermal/%s/%s.html"
@@ -268,7 +269,7 @@ def process_commands(now_time_utc, cmds):
         if cmd["type"] == "MP_OBSID":
             if param < 40000:
                 line = line.replace(str(param),
-                                    f"<a href=\"{obsid_link_base}{param}\" target=\"_blank\" rel=\"noopener noreferrer\"><font color=\"blue\">{param}</font></a>")
+                                    f"<a href=\"{obsid_link_base}?obsid={param}\" target=\"_blank\" rel=\"noopener noreferrer\"><font color=\"blue\">{param}</font></a>")
 
         cmdlines.append(line+"\n")
         cmdtimes.append(the_time)
