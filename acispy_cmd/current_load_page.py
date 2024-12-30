@@ -268,7 +268,7 @@ def process_commands(now_time_utc, cmds):
         if cmd["type"] == "MP_OBSID":
             if param < 40000:
                 line = line.replace(str(param),
-                                    f"<a href=\"{obsid_link_base}{param}\"><font color=\"blue\">{param}</font></a>")
+                                    f"<a href=\"{obsid_link_base}{param}\" target=\"_blank\" rel=\"noopener noreferrer\"><font color=\"blue\">{param}</font></a>")
 
         cmdlines.append(line+"\n")
         cmdtimes.append(the_time)
