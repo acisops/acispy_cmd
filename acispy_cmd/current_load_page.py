@@ -123,7 +123,6 @@ low_red_limits = {"tmp_fep1_mong": -10.0,
                   "tmp_bep_pcb": -10.0}
 
 
-#obsid_link_base = "https://icxc.harvard.edu/cgi-bin/mp/target_param.cgi?"
 obsid_link_base = "https://cda.harvard.edu/chaser/startViewer.action"
 mit_link_base = "http://acisweb.mit.edu/cgi-bin/get-atbls?tag="
 lr_link_base = "http://cxc.cfa.harvard.edu/acis/lr_texts/%s/%s_lr.html"
@@ -194,7 +193,7 @@ def process_commands(now_time_utc, cmds):
     end_time_secs = now_time_secs + 86400.0
     start_time_secs = now_time_secs - 2.0*86400.0
 
-    cmdlines = ["<div class=\"scrollable-window\" id=\"scrollableContainer\">"]
+    cmdlines = []
     cmdtimes = []
     simtrans = []
 
@@ -209,12 +208,14 @@ def process_commands(now_time_utc, cmds):
         if the_time < start_time_secs or the_time > end_time_secs:
             continue
 
+        if cmd["type"] == "LOAD_EVENT":
+            continue
         if cmd["type"] == "COMMAND_SW":
             if "msid" not in cmd["params"]:
                 continue
             if "OORM" not in cmd["params"]["msid"] and "ETG" not in cmd["params"]["msid"]:
                 continue
-        if cmd["type"] == "COMMAND_HW" and "CSELFMT" not in cmd["params"]:
+        if cmd["type"] == "COMMAND_HW" and "CSELFMT" not in cmd["tlmsid"]:
             continue
         if cmd["type"].startswith("MP_") and not cmd["type"].endswith("OBSID"):
             continue
@@ -251,13 +252,13 @@ def process_commands(now_time_utc, cmds):
             highlight = "<padtime>%s</padtime>"
         elif cmd["type"] == "COMMAND_HW":
             # Assuming that this is a format change
-            param = cmd["tlsmid"]
+            param = cmd["tlmsid"]
         elif cmd["type"] == "MP_OBSID":
             param = cmd["params"]['id']
             highlight = "<obsidline>%s</obsidline>"
         elif cmd["type"] == "ORBPOINT":
             param = cmd["event_type"]
-
+            
         line = f"{cmd['date']}\t{cmd['type']}\t{param}"
 
         if highlight is not None:
@@ -297,8 +298,6 @@ def process_commands(now_time_utc, cmds):
             line = f"==> WSPOW COMMAND LOADS: {outcome}\n"
             cmdlines.append(line)
             cmdtimes.append(the_time)
-
-    cmdlines += ["</div>", "</pre>"]
 
     return cmdtimes, cmdlines, simtrans
 
@@ -519,7 +518,9 @@ def main():
     
         insert_now_time(cmdtimes, cmdlines, now_time_secs, now_time_utc, now_time_local)
     
+        outlines.append("<div class=\"scrollable-window\" id=\"scrollableContainer\">")
         outlines += cmdlines
+        outlines += ["</div>", "</pre>"]
     
         for temp in temps:
             ds_m = ds_models[temp]
